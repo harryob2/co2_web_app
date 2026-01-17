@@ -15,7 +15,7 @@
 
 No drivers. No apps. No setup. Just plug and visualize.
 
-[🚀 **Try Live Demo**](#) · [📖 Documentation](#how-it-works) · [🐬 CO2 Logger App](https://github.com/harryob2/co2_logger)
+[🚀 **Try Live Demo**](https://www.flipperco2.com/) · [📖 Documentation](#how-it-works) · [🐬 CO2 Logger App](https://github.com/harryob2/co2_logger)
 
 <br />
 
@@ -75,9 +75,9 @@ Works on any browser — just click **Upload CSV** and select the file from your
 
 ## 🔗 Live Demo
 
-> 🚧 **Coming soon** — Hosted version in development
->
-> For now, run locally by opening `index.html` in Chrome or Edge.
+**[👉 Try it now at flipperco2.com](https://www.flipperco2.com/)**
+
+No installation needed — just open in Chrome or Edge and connect your Flipper!
 
 ---
 

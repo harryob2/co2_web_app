@@ -62,7 +62,7 @@ browser-based
    ```
    🌬️ Visualize Flipper Zero CO2 data in your browser — plug in via USB, see charts instantly. No apps or drivers needed.
    ```
-3. Set website URL when you have a hosted version
+3. Set website URL to: `https://www.flipperco2.com/`
 
 ---
 
@@ -112,7 +112,7 @@ Host the app directly from GitHub:
 - [ ] Description updated
 - [ ] License added
 - [ ] GitHub Pages enabled (optional)
-- [ ] Demo link updated in README (when available)
+- [x] Demo link updated in README (https://www.flipperco2.com/)
 
 ---
 
