@@ -2,6 +2,14 @@
 
 Web app for reading the Flipper Zero CO2 logger CSV and plotting a single chart.
 
+## Screenshots
+
+### Main View
+![Main View](screenshots/main-view.png)
+
+### Chart View
+![Chart View](screenshots/chart-view.png)
+
 ## What it does
 
 - Connects to the Flipper Zero over USB serial using Web Serial API.
