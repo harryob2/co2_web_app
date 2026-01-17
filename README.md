@@ -1,6 +1,6 @@
 # CO2 Logger Web App
 
-Web app for reading the Flipper Zero CO2 logger CSV and plotting a single chart.
+Web app for reading the Flipper Zero CO2 logger CSV and plotting a single chart. Designed to work with the [CO2 Logger Flipper Zero app](https://github.com/harryob2/co2_logger). 
 
 ## Screenshots
 
