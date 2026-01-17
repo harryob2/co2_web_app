@@ -148,7 +148,7 @@ async function readCsvFromFlipper() {
     setStatus(`Checking ${dirPath}...`);
     const listResponse = await runCommand(`storage list ${dirPath}`);
     if (!listResponse.toLowerCase().includes(fileName.toLowerCase())) {
-      setStatus(`File not found: ${fileName}`, true);
+      setStatus(`File not found: ${fileName}. Make sure the CO2 logger app isn't running on your Flipper.`, true);
       return;
     }
 
