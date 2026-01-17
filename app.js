@@ -44,8 +44,19 @@ const FLIPPER_USB_FILTERS = [
 ];
 
 function setStatus(message, isError = false) {
-  statusEl.textContent = message;
+  statusEl.innerHTML = message;
   statusEl.style.borderColor = isError ? "#ff928b" : "var(--flipper-border)";
+}
+
+function setStatusWithHint(hint, errorMessage) {
+  statusEl.innerHTML = `
+    <span class="status-hint">${hint}</span>
+    <details class="status-details">
+      <summary>Additional info</summary>
+      <div class="error-text">${errorMessage}</div>
+    </details>
+  `;
+  statusEl.style.borderColor = "#ff928b";
 }
 
 function toggleConnectedUI(isConnected) {
@@ -123,7 +134,14 @@ async function disconnectSerial() {
       port = null;
     }
   } catch (error) {
-    setStatus(`Disconnect warning: ${error.message}`, true);
+    if (error.message.includes("port is already closed")) {
+      setStatusWithHint(
+        "Make sure qFlipper is closed.",
+        `Disconnect warning: ${error.message}`
+      );
+    } else {
+      setStatus(`Disconnect warning: ${error.message}`, true);
+    }
   } finally {
     toggleConnectedUI(false);
   }
@@ -148,7 +166,10 @@ async function readCsvFromFlipper() {
     setStatus(`Checking ${dirPath}...`);
     const listResponse = await runCommand(`storage list ${dirPath}`);
     if (!listResponse.toLowerCase().includes(fileName.toLowerCase())) {
-      setStatus(`File not found: ${fileName}. Make sure the CO2 logger app isn't running on your Flipper.`, true);
+      setStatusWithHint(
+        "Make sure the CO2 logger app isn't running on your Flipper.",
+        `File not found: ${fileName}`
+      );
       return;
     }
 
