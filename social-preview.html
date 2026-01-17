@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, height=640">
+  <title>Social Preview - CO2 Logger Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 1280px;
+      height: 640px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Inter', -apple-system, sans-serif;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Subtle grid pattern overlay */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255,130,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,130,0,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Glowing orb effect */
+    .glow {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255,130,0,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      top: -100px;
+      right: 100px;
+      pointer-events: none;
+    }
+
+    .glow-2 {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,130,0,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      bottom: -50px;
+      left: 200px;
+      pointer-events: none;
+    }
+
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 50px 60px 70px;
+      z-index: 1;
+    }
+
+    .flipper-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 130, 0, 0.15);
+      border: 1px solid rgba(255, 130, 0, 0.3);
+      border-radius: 20px;
+      padding: 8px 16px;
+      margin-bottom: 24px;
+      width: fit-content;
+    }
+
+    .flipper-badge svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .flipper-badge span {
+      color: #FF8200;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    h1 {
+      font-size: 64px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    h1 span {
+      color: #FF8200;
+    }
+
+    .tagline {
+      font-size: 22px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+      max-width: 480px;
+      margin-bottom: 32px;
+    }
+
+    .features {
+      display: flex;
+      gap: 24px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .feature-icon {
+      width: 28px;
+      height: 28px;
+      background: rgba(255,130,0,0.2);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .right-panel {
+      flex: 0 0 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-right: 50px;
+      z-index: 1;
+    }
+
+    .chart-preview {
+      width: 460px;
+      height: 380px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 16px;
+      box-shadow: 
+        0 25px 50px -12px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,130,0,0.2);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .chart-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .chart-badge {
+      font-size: 11px;
+      background: #FF8200;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .chart-area {
+      height: 260px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      padding-bottom: 30px;
+    }
+
+    /* Y-axis labels */
+    .y-axis {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 30px;
+      width: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #999;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Chart line visualization */
+    .chart-svg {
+      position: absolute;
+      left: 45px;
+      right: 10px;
+      top: 10px;
+      bottom: 30px;
+    }
+
+    .chart-line {
+      fill: none;
+      stroke: #FF8200;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chart-area-fill {
+      fill: url(#orangeGradient);
+    }
+
+    /* X-axis */
+    .x-axis {
+      position: absolute;
+      bottom: 0;
+      left: 45px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #999;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: rgba(255,255,255,0.05);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 70px;
+      z-index: 1;
+    }
+
+    .author {
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+    }
+
+    .author a {
+      color: #FF8200;
+      text-decoration: none;
+    }
+
+    .github-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.4);
+      font-size: 13px;
+    }
+
+    .github-hint svg {
+      width: 18px;
+      height: 18px;
+      fill: rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="glow-2"></div>
+  
+  <div class="left-panel">
+    <div class="flipper-badge">
+      <svg viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="4" width="20" height="16" rx="3" stroke="#FF8200" stroke-width="2"/>
+        <circle cx="7" cy="12" r="2" fill="#FF8200"/>
+        <rect x="11" y="10" width="8" height="4" rx="1" fill="#FF8200"/>
+      </svg>
+      <span>Flipper Zero</span>
+    </div>
+    
+    <h1>CO2 Logger <span>Viewer</span></h1>
+    
+    <p class="tagline">
+      Visualize your Flipper Zero CO2 data instantly in your browser. No apps, no drivers, no setup.
+    </p>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🔌</div>
+        <span>USB Direct</span>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <span>Live Charts</span>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌐</div>
+        <span>Browser-Based</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="right-panel">
+    <div class="chart-preview">
+      <div class="chart-header">
+        <span class="chart-title">CO2 ppm over time</span>
+        <span class="chart-badge">LIVE DATA</span>
+      </div>
+      <div class="chart-area">
+        <div class="y-axis">
+          <span>800</span>
+          <span>600</span>
+          <span>400</span>
+        </div>
+        <svg class="chart-svg" viewBox="0 0 380 200" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#FF8200;stop-opacity:0.3"/>
+              <stop offset="100%" style="stop-color:#FF8200;stop-opacity:0.02"/>
+            </linearGradient>
+          </defs>
+          <!-- Area fill -->
+          <path class="chart-area-fill" d="M0,180 L20,175 L40,170 L60,160 L80,150 L100,130 L120,110 L140,85 L160,60 L180,45 L200,35 L220,30 L240,40 L260,55 L280,75 L300,95 L320,115 L340,130 L360,140 L380,145 L380,200 L0,200 Z"/>
+          <!-- Line -->
+          <path class="chart-line" d="M0,180 L20,175 L40,170 L60,160 L80,150 L100,130 L120,110 L140,85 L160,60 L180,45 L200,35 L220,30 L240,40 L260,55 L280,75 L300,95 L320,115 L340,130 L360,140 L380,145"/>
+          <!-- Data points -->
+          <circle cx="220" cy="30" r="5" fill="#FF8200"/>
+          <circle cx="220" cy="30" r="8" fill="none" stroke="#FF8200" stroke-width="2" opacity="0.5"/>
+        </svg>
+        <div class="x-axis">
+          <span>14:30</span>
+          <span>14:35</span>
+          <span>14:40</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bottom-bar">
+    <span class="author">Built by <a href="https://harryob.co">Harry O'Brien</a></span>
+    <div class="github-hint">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+      </svg>
+      <span>Star on GitHub</span>
+    </div>
+  </div>
+</body>
+</html>
