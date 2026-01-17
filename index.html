@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CO2 Logger Viewer</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"
+      defer
+    ></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand">
+        <img
+          class="brand-logo"
+          src="https://cdn.flipper.net/orange_text_transparent.png"
+          alt="Flipper"
+        />
+        <div class="brand-text">
+          <h1>CO2 Logger</h1>
+          <p>Flipper Zero CSV viewer</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="connectButton" class="btn btn-primary">
+          Connect USB
+        </button>
+        <button id="disconnectButton" class="btn btn-outline" disabled>
+          Disconnect
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="panel-row">
+          <div class="field">
+            <label for="filePath">CSV path</label>
+            <input
+              id="filePath"
+              type="text"
+              value="/ext/apps_data/co2_logger/co2_log.csv"
+            />
+          </div>
+          <div class="field">
+            <label for="baudRate">Baud rate</label>
+            <input id="baudRate" type="number" min="1200" value="230400" />
+          </div>
+          <div class="field field-wide">
+            <label for="status">Status</label>
+            <div id="status" class="status">Not connected</div>
+          </div>
+        </div>
+        <div class="panel-row">
+          <button id="readButton" class="btn btn-primary" disabled>
+            Read CSV
+          </button>
+          <button id="clearButton" class="btn btn-outline">
+            Clear Chart
+          </button>
+          <label class="file-upload btn btn-outline" for="fileInput">
+            Upload CSV
+          </label>
+          <input id="fileInput" type="file" accept=".csv,text/csv" hidden />
+        </div>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="chart-header">
+          <h2>CO2 ppm over time</h2>
+          <span id="pointCount">No data loaded</span>
+        </div>
+
+        <!-- Time Range Controls -->
+        <div class="time-controls" id="timeControls">
+          <div class="time-presets">
+            <span class="preset-label">Quick range:</span>
+            <div class="preset-buttons">
+              <button class="preset-btn" data-range="1h">1H</button>
+              <button class="preset-btn" data-range="6h">6H</button>
+              <button class="preset-btn" data-range="12h">12H</button>
+              <button class="preset-btn active" data-range="24h">24H</button>
+              <button class="preset-btn" data-range="3d">3D</button>
+              <button class="preset-btn" data-range="7d">7D</button>
+              <button class="preset-btn" data-range="30d">30D</button>
+              <button class="preset-btn" data-range="all">All</button>
+            </div>
+          </div>
+
+          <div class="nav-24h">
+            <button id="prevDay" class="btn btn-outline btn-nav" disabled>
+              ◀ Previous 24h
+            </button>
+            <button id="nextDay" class="btn btn-outline btn-nav" disabled>
+              Next 24h ▶
+            </button>
+          </div>
+
+          <div class="time-custom">
+            <div class="datetime-group">
+              <label>From</label>
+              <div class="datetime-inputs">
+                <input type="date" id="startDate" />
+                <input type="time" id="startTime" value="00:00" />
+              </div>
+            </div>
+            <div class="datetime-group">
+              <label>To</label>
+              <div class="datetime-inputs">
+                <input type="date" id="endDate" />
+                <input type="time" id="endTime" value="23:59" />
+              </div>
+            </div>
+            <button id="applyRange" class="btn btn-primary btn-sm">Apply</button>
+            <button id="resetZoom" class="btn btn-outline btn-sm">Reset Zoom</button>
+          </div>
+
+          <div class="data-range-info">
+            <span id="dataRangeInfo">Load data to see available range</span>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="co2Chart"></canvas>
+        </div>
+        <p class="zoom-hint">🔍 Scroll to zoom • Drag to pan • Double-click to reset</p>
+      </section>
+
+      <section class="panel info-panel">
+        <h3>How it works</h3>
+        <ol>
+          <li>Connect Flipper Zero via <strong>USB</strong> (data cable, not charge-only).</li>
+          <li>Close qFlipper or other apps using the serial port.</li>
+          <li>Open this page in <strong>Chrome or Edge</strong>.</li>
+          <li>Click "Connect USB" and select your Flipper Zero — data loads automatically!</li>
+        </ol>
+        <p class="note">
+          <strong>Tip:</strong> If no devices appear, ensure qFlipper is closed and the Flipper is unlocked.
+        </p>
+        <p class="note">
+          If Web Serial is unavailable, use "Upload CSV" to select the file from
+          your SD card.
+        </p>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Built by Harry O'Brien - <a href="https://harryob.co" target="_blank">harryob.co</a></span>
+      <span>CO2 Logger Viewer</span>
+    </footer>
+  </body>
+</html>
