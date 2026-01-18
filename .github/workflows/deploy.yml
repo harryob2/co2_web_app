@@ -1,0 +1,21 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Update Repository
+        run: |
+          cd /home/harry/projects/co2_web_app
+          git checkout main
+          git pull origin main
+
+      - name: Restart Service
+        run: |
+          export XDG_RUNTIME_DIR=/run/user/$(id -u)
+          systemctl --user restart co2-webapp
