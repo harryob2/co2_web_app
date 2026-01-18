@@ -15,7 +15,7 @@
 
 No drivers. No apps. No setup. Just plug and visualize.
 
-[🚀 **Try Live Demo**](https://www.flipperco2.com/) · [📖 Documentation](#how-it-works) · [🐬 CO2 Logger App](https://github.com/harryob2/co2_logger)
+[🚀 **Try Live Demo**](https://www.flipperco2.com/) · [🐬 CO2 Logger App](https://github.com/harryob2/co2_logger)
 
 <br />
 
