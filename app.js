@@ -136,7 +136,7 @@ async function disconnectSerial() {
   } catch (error) {
     if (error.message.includes("port is already closed")) {
       setStatusWithHint(
-        "Make sure qFlipper is closed.",
+        "Make sure qFlipper or another app connected to your Flipper isn't running, then try connecting again.",
         `Disconnect warning: ${error.message}`
       );
     } else {
@@ -159,6 +159,9 @@ async function readCsvFromFlipper() {
     return;
   }
 
+  // Disable Read CSV button while loading
+  readButton.disabled = true;
+
   try {
     const dirPath = filePath.split("/").slice(0, -1).join("/") || "/";
     const fileName = filePath.split("/").pop();
@@ -167,7 +170,7 @@ async function readCsvFromFlipper() {
     const listResponse = await runCommand(`storage list ${dirPath}`);
     if (!listResponse.toLowerCase().includes(fileName.toLowerCase())) {
       setStatusWithHint(
-        "Make sure the CO2 logger app isn't running on your Flipper.",
+        "Make sure the CO2 logger app isn't running. Refresh the page, unplug the USB cable from the Flipper, wait 5 seconds, plug it back in, and try again.",
         `File not found: ${fileName}`
       );
       return;
@@ -188,6 +191,11 @@ async function readCsvFromFlipper() {
     setStatus("CSV loaded.");
   } catch (error) {
     setStatus(`Read failed: ${error.message}`, true);
+  } finally {
+    // Re-enable Read CSV button after loading completes
+    if (port) {
+      readButton.disabled = false;
+    }
   }
 }
 
