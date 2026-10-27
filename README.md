@@ -139,3 +139,23 @@ MIT © [Harry O'Brien](https://harryob.co)
 Made with 🧡 for the Flipper Zero community
 
 </div>
+
+## Production deployment
+
+Nginx serves a clean static artifact at `/var/www/flipperco2`.
+`scripts/build-static.py OUTPUT_DIR` includes only the public assets; the
+operator syncs that artifact (automatic GitHub deployment remains disabled). Do not serve the source checkout
+or restart the retired `co2-webapp` Python HTTP server. No app runtime or build
+system is needed for this website.
+
+Deployment as harry on the server, after updating the checkout:
+
+```sh
+artifact=$(mktemp -d)
+python3 scripts/build-static.py "$artifact"
+rsync -a --delete "$artifact/" /var/www/flipperco2/
+rm -rf "$artifact"
+```
+
+Verify HTTPS for apex/www and confirm `/.git/HEAD`, `/key.pem` and `/server.py`
+remain forbidden or missing. No service restart is required.
